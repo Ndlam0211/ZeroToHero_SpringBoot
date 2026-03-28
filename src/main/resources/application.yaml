@@ -1,3 +1,17 @@
+# Microservice
+server:
+  port: 8080
+  servlet:
+    context-path: /identity
+
+# Spring config
 spring:
   application:
     name: zerotohero
+
+  # Database
+  datasource:
+    url: "jdbc:mysql://localhost:3306/identity_service"
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
