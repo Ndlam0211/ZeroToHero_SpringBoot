@@ -1,9 +1,14 @@
 package com.lamnd.zerotohero.dto.request;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
 import java.time.LocalDate;
 
 public class UserCreationRequest {
+    @NotBlank
     private String username;
+    @Size(min = 8, message = "password must be at least 8 characters")
     private String password;
     private String firstName;
     private String lastName;

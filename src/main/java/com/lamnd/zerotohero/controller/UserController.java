@@ -4,6 +4,7 @@ import com.lamnd.zerotohero.dto.request.UserCreationRequest;
 import com.lamnd.zerotohero.dto.request.UserUpdationRequest;
 import com.lamnd.zerotohero.entity.User;
 import com.lamnd.zerotohero.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ public class UserController {
     private UserService userService;
 
     @PostMapping
-    User createUser(@RequestBody UserCreationRequest request) {
+    User createUser(@RequestBody @Valid UserCreationRequest request) {
         return userService.createUser(request);
     }
 
@@ -29,12 +30,8 @@ public class UserController {
 
     @GetMapping("/{userId}")
     ResponseEntity<?> getUserById(@PathVariable("userId") String userId) {
-        try {
-            User user = userService.getUserById(userId);
-            return new ResponseEntity<>(user, HttpStatus.OK);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>("User Not Found",HttpStatus.NOT_FOUND);
-        }
+        User user = userService.getUserById(userId);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @PutMapping("/{userId}")
