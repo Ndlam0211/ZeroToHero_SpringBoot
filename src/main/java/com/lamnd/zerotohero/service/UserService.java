@@ -1,50 +1,49 @@
 package com.lamnd.zerotohero.service;
 
+import com.lamnd.zerotohero.dto.reponse.UserResponse;
 import com.lamnd.zerotohero.dto.request.UserCreationRequest;
-import com.lamnd.zerotohero.dto.request.UserUpdationRequest;
+import com.lamnd.zerotohero.dto.request.UserUpdateRequest;
 import com.lamnd.zerotohero.entity.User;
+import com.lamnd.zerotohero.exception.AppException;
+import com.lamnd.zerotohero.exception.ErrorCode;
+import com.lamnd.zerotohero.mapper.UserMapper;
 import com.lamnd.zerotohero.repository.UserRepo;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
-    @Autowired
-    private UserRepo userRepo;
+    private final UserRepo userRepo;
 
-    public User createUser(UserCreationRequest request){
-        User user = new User();
+    private final UserMapper userMapper;
+
+    public UserResponse createUser(UserCreationRequest request){
 
         if(userRepo.existsByUsername(request.getUsername())){
-            throw new RuntimeException("Username already exists");
+            throw new AppException(ErrorCode.USER_EXISTED);
         }
 
-        user.setUsername(request.getUsername());
-        user.setPassword(request.getPassword());
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
-        user.setDob(request.getDob());
+        User user = userMapper.toUser(request);
 
-        return userRepo.save(user);
+        return userMapper.toDTO(userRepo.save(user));
     }
 
-    public List<User> getAllUser() {
-        return userRepo.findAll();
+    public List<UserResponse> getAllUser() {
+        return userMapper.toListDTO(userRepo.findAll());
     }
 
-    public User getUserById(String userId) {
-        return findUserById(userId);
+    public UserResponse getUserById(String userId) {
+        return userMapper.toDTO(findUserById(userId));
     }
 
-    public User updateUserById(String userId, UserUpdationRequest request) {
+    public User updateUserById(String userId, UserUpdateRequest request) {
         User user = findUserById(userId);
 
-        user.setPassword(request.getPassword());
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
-        user.setDob(request.getDob());
+        userMapper.updateUser(user, request);
 
         return userRepo.save(user);
     }

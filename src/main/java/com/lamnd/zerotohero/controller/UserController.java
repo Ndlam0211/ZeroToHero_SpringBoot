@@ -1,11 +1,13 @@
 package com.lamnd.zerotohero.controller;
 
+import com.lamnd.zerotohero.dto.reponse.APIResponse;
+import com.lamnd.zerotohero.dto.reponse.UserResponse;
 import com.lamnd.zerotohero.dto.request.UserCreationRequest;
-import com.lamnd.zerotohero.dto.request.UserUpdationRequest;
+import com.lamnd.zerotohero.dto.request.UserUpdateRequest;
 import com.lamnd.zerotohero.entity.User;
 import com.lamnd.zerotohero.service.UserService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,28 +16,39 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/users")
+@RequiredArgsConstructor
 public class UserController {
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
     @PostMapping
-    User createUser(@RequestBody @Valid UserCreationRequest request) {
-        return userService.createUser(request);
+    APIResponse<UserResponse> createUser(@RequestBody @Valid UserCreationRequest request) {
+        UserResponse user = userService.createUser(request);
+
+        APIResponse<UserResponse> response = APIResponse.<UserResponse>builder()
+                .data(user).build();
+
+        return response;
     }
 
     @GetMapping
-    List<User> getAllUsers() {
+    List<UserResponse> getAllUsers() {
         return userService.getAllUser();
     }
 
     @GetMapping("/{userId}")
-    ResponseEntity<?> getUserById(@PathVariable("userId") String userId) {
-        User user = userService.getUserById(userId);
-        return new ResponseEntity<>(user, HttpStatus.OK);
+    ResponseEntity<APIResponse<UserResponse>> getUserById(@PathVariable("userId") String userId) {
+        UserResponse user = userService.getUserById(userId);
+
+        APIResponse<UserResponse> response = APIResponse.<UserResponse>builder()
+                .code(200)
+                .data(user)
+                .build();
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PutMapping("/{userId}")
-    ResponseEntity<?> updateUserById(@PathVariable("userId") String userId, @RequestBody UserUpdationRequest request) {
+    ResponseEntity<?> updateUserById(@PathVariable("userId") String userId, @RequestBody UserUpdateRequest request) {
         try {
             User user = userService.updateUserById(userId,request);
             return new ResponseEntity<>(user, HttpStatus.OK);
