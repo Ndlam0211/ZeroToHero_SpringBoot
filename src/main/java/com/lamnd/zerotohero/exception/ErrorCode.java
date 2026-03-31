@@ -2,7 +2,8 @@ package com.lamnd.zerotohero.exception;
 
 public enum ErrorCode {
     USER_EXISTED(101, "User already exists"),
-    INVALID_DATA(101, "Invalid data"),
+    INVALID_DATA(102, "Invalid data"),
+    BAD_CREDENTIALS(103, "Username or password is incorrect"),
     UNCATEGORIZED_EXCEPTION(999, "Uncategorized error"),
     ;
 
