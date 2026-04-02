@@ -5,27 +5,30 @@ import com.lamnd.zerotohero.dto.request.UserCreationRequest;
 import com.lamnd.zerotohero.dto.request.UserUpdateRequest;
 import com.lamnd.zerotohero.entity.User;
 import com.lamnd.zerotohero.enums.Role;
-import com.lamnd.zerotohero.exception.AppException;
-import com.lamnd.zerotohero.exception.ErrorCode;
+import com.lamnd.zerotohero.exception.ResourceExistedException;
+import com.lamnd.zerotohero.exception.ResourceNotFoundException;
 import com.lamnd.zerotohero.mapper.UserMapper;
+import com.lamnd.zerotohero.repository.RoleRepo;
 import com.lamnd.zerotohero.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepo userRepo;
+
+    private final RoleRepo roleRepo;
 
     private final UserMapper userMapper;
 
@@ -34,27 +37,26 @@ public class UserService {
     public UserResponse createUser(UserCreationRequest request){
 
         if(userRepo.existsByUsername(request.getUsername())){
-            throw new AppException(ErrorCode.USER_EXISTED);
+            throw new ResourceExistedException("User", "username", request.getUsername());
         }
 
         request.setPassword(passwordEncoder.encode(request.getPassword()));
 
         User user = userMapper.toUser(request);
 
-        HashSet<String> roles = new HashSet<>();
-        roles.add(Role.USER.name());
-
-//        user.setRoles(roles);
+        Set<com.lamnd.zerotohero.entity.Role> roles = new HashSet<>();
+        roleRepo.findById(Role.USER.name()).map(((roles::add)));
+        user.setRoles(roles);
 
         return userMapper.toDTO(userRepo.save(user));
     }
 
-    @PreAuthorize("hasRole('ADMIN')") // only admin able to access
+    @PreAuthorize("hasRole('ADMIN')") // only admin is able to access
     public List<UserResponse> getAllUser() {
         return userMapper.toListDTO(userRepo.findAll());
     }
 
-    @PostAuthorize("returnObject.username == authentication.name") // users can only get their own information, can't get other users information
+    @PostAuthorize("returnObject.username == authentication.name or hasRole('ADMIN')") // users can only get their own information, can't get other users information
     public UserResponse getUserById(String userId) {
         return userMapper.toDTO(findUserById(userId));
     }
@@ -70,12 +72,16 @@ public class UserService {
     }
 
 
-    public User updateUserById(String userId, UserUpdateRequest request) {
+    public UserResponse updateUserById(String userId, UserUpdateRequest request) {
         User user = findUserById(userId);
 
         userMapper.updateUser(user, request);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        return userRepo.save(user);
+        var roles = roleRepo.findAllById(request.getRoles());
+        user.setRoles(new HashSet<>(roles));
+
+        return userMapper.toDTO(userRepo.save(user));
     }
 
     public void deleteUserById(String userId) {
@@ -84,13 +90,13 @@ public class UserService {
 
     private User findUserById(String userId) {
         return userRepo.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User Not Found")
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId)
         );
     }
 
     private User findUserByUsername(String username) {
         return userRepo.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User Not Found")
+                .orElseThrow(() -> new ResourceNotFoundException("User", "username", username)
         );
     }
 }

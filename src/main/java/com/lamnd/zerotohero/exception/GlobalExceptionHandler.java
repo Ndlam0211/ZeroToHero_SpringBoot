@@ -53,6 +53,26 @@ public class GlobalExceptionHandler {
                 .body(response);
     }
 
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<APIResponse<?>> handleResourceNotFoundException(ResourceNotFoundException ex){
+        APIResponse<?> response = APIResponse.builder()
+                .code(404)
+                .message(ex.getMessage())
+                .build();
+
+        return new ResponseEntity<APIResponse<?>>(response, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ResourceExistedException.class)
+    public ResponseEntity<APIResponse<?>> handleResourceExistedException(ResourceExistedException ex){
+        APIResponse<?> response = APIResponse.builder()
+                .code(422)
+                .message(ex.getMessage())
+                .build();
+
+        return new ResponseEntity<APIResponse<?>>(response, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<APIResponse<Map<String,String>>> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex){
         APIResponse<Map<String,String>> response = new APIResponse<>();

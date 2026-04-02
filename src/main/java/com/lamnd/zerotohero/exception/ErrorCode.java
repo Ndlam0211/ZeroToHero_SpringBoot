@@ -6,7 +6,6 @@ import org.springframework.http.HttpStatusCode;
 
 @Getter
 public enum ErrorCode {
-    USER_EXISTED(101, "User already exists", HttpStatus.BAD_REQUEST),
     INVALID_DATA(102, "Invalid data", HttpStatus.BAD_REQUEST),
     BAD_CREDENTIALS(103, "Username or password is incorrect", HttpStatus.BAD_REQUEST),
     UNAUTHENTICATED(104, "Unauthorized", HttpStatus.UNAUTHORIZED),
