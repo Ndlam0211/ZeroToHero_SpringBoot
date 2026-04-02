@@ -1,6 +1,7 @@
 package com.lamnd.zerotohero.dto.reponse;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.lamnd.zerotohero.entity.Role;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
@@ -16,6 +17,6 @@ public class UserResponse {
     String firstName;
     String lastName;
     LocalDate dob;
-    Set<String> roles;
+    Set<Role> roles;
     String id;
 }

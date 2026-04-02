@@ -108,9 +108,9 @@ public class AuthService {
     private String buildScope(User user) {
         StringJoiner scope = new StringJoiner(" ");
 
-        if (!CollectionUtils.isEmpty(user.getRoles())) {
-            user.getRoles().forEach(scope::add);
-        }
+//        if (!CollectionUtils.isEmpty(user.getRoles())) {
+//            user.getRoles().forEach(scope::add);
+//        }
 
         return scope.toString();
     }
