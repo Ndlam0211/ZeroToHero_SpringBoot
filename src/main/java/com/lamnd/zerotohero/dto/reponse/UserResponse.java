@@ -12,10 +12,10 @@ import java.util.Set;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserResponse {
-    String id;
     String username;
     String firstName;
     String lastName;
     LocalDate dob;
     Set<String> roles;
+    String id;
 }

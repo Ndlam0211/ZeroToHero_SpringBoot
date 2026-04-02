@@ -10,6 +10,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,6 +41,18 @@ public class UserController {
     @GetMapping("/{userId}")
     ResponseEntity<APIResponse<UserResponse>> getUserById(@PathVariable("userId") String userId) {
         UserResponse user = userService.getUserById(userId);
+
+        APIResponse<UserResponse> response = APIResponse.<UserResponse>builder()
+                .code(200)
+                .data(user)
+                .build();
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/myInfo")
+    ResponseEntity<APIResponse<UserResponse>> getMyInfo() {
+        UserResponse user = userService.getMyInfo();
 
         APIResponse<UserResponse> response = APIResponse.<UserResponse>builder()
                 .code(200)

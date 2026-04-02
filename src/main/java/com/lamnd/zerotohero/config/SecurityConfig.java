@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -24,6 +25,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
     @Value("${jwt.signer_key}")
@@ -36,7 +38,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(requests -> requests
                         // CREATION USER API ENDPOINT - NO JWT REQUIRED
                         .requestMatchers(HttpMethod.POST,AppConstants.USER_URLS).permitAll()
-                        .requestMatchers(HttpMethod.GET, AppConstants.USER_URLS).hasRole(Role.ADMIN.name())
+//                        .requestMatchers(HttpMethod.GET, AppConstants.USER_URLS).hasRole(Role.ADMIN.name())
                         // AUTHENTICATION ENDPOINTS - NO JWT REQUIRED
                         .requestMatchers(AppConstants.AUTH_URLS).permitAll()
                         // OTHER API ENDPOINTS - JWT REQUIRED
