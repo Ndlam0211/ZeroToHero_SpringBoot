@@ -1,8 +1,11 @@
 package com.lamnd.zerotohero.exception;
 
 import com.lamnd.zerotohero.dto.reponse.APIResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -14,22 +17,40 @@ import java.util.Map;
 public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<APIResponse> handleOtherException(Exception ex){
+        ErrorCode errorCode = ErrorCode.UNCATEGORIZED_EXCEPTION;
         APIResponse response = new APIResponse();
 
-        response.setCode(ErrorCode.UNCATEGORIZED_EXCEPTION.getCode());
-        response.setMessage(ErrorCode.UNCATEGORIZED_EXCEPTION.getMessage());
+        response.setCode(errorCode.getCode());
+        response.setMessage(errorCode.getMessage());
 
         return ResponseEntity.internalServerError().body(response);
     }
 
     @ExceptionHandler(AppException.class)
     public ResponseEntity<APIResponse> handleAppException(AppException ex){
+        ErrorCode errorCode = ex.getErrorCode();
         APIResponse response = new APIResponse();
 
-        response.setCode(ex.getErrorCode().getCode());
+        response.setCode(errorCode.getCode());
         response.setMessage(ex.getMessage());
 
-        return ResponseEntity.badRequest().body(response);
+        return ResponseEntity
+                .status(errorCode.getHttpStatusCode())
+                .body(response);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<APIResponse> handleAccessDeniedException(AccessDeniedException ex) {
+        ErrorCode errorCode = ErrorCode.UNAUTHORIZED;
+
+        APIResponse response = new APIResponse();
+
+        response.setCode(errorCode.getCode());
+        response.setMessage(errorCode.getMessage());
+
+        return ResponseEntity
+                .status(errorCode.getHttpStatusCode())
+                .body(response);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

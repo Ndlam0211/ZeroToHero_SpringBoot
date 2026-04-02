@@ -49,6 +49,7 @@ public class SecurityConfig {
                                 .decoder(jwtDecoder())
                                 .jwtAuthenticationConverter(jwtAuthenticationConverter())
                         )
+                        .authenticationEntryPoint(new JWTAuthenticationEndpoint())
                 );
                 // k luu session, cookie tren client
 //                .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
