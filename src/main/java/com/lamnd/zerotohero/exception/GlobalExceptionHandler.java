@@ -86,10 +86,12 @@ public class GlobalExceptionHandler {
             errors.put(fieldName,errorMessage);
         });
 
-        response.setCode(ErrorCode.INVALID_DATA.getCode());
-        response.setMessage(ErrorCode.INVALID_DATA.getMessage());
+        ErrorCode error = ErrorCode.INVALID_DATA;
+
+        response.setCode(error.getCode());
+        response.setMessage(error.getMessage());
         response.setData(errors);
 
-        return ResponseEntity.badRequest().body(response);
+        return ResponseEntity.status(error.getHttpStatusCode()).body(response);
     }
 }
