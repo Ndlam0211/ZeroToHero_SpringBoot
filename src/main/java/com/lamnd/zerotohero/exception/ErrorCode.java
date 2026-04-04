@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatusCode;
 public enum ErrorCode {
     INVALID_DATA(102, "Invalid data", HttpStatus.BAD_REQUEST),
     BAD_CREDENTIALS(103, "Username or password is incorrect", HttpStatus.BAD_REQUEST),
-    UNAUTHENTICATED(104, "Unauthorized", HttpStatus.UNAUTHORIZED),
+    UNAUTHENTICATED(104, "Unauthenticated", HttpStatus.UNAUTHORIZED),
     UNAUTHORIZED(105, "You do not have permission", HttpStatus.FORBIDDEN),
     INVALID_TOKEN(106, "Invalid token", HttpStatus.BAD_REQUEST),
     EXPIRED_TOKEN(107, "Token is expired", HttpStatus.BAD_REQUEST),

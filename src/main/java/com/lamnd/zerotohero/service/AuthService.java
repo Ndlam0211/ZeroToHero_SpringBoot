@@ -5,6 +5,7 @@ import com.lamnd.zerotohero.dto.reponse.IntrospectResponse;
 import com.lamnd.zerotohero.dto.request.AuthRequest;
 import com.lamnd.zerotohero.dto.request.IntrospectRequest;
 import com.lamnd.zerotohero.dto.request.LogoutRequest;
+import com.lamnd.zerotohero.dto.request.RefreshRequest;
 import com.lamnd.zerotohero.entity.BlacklistToken;
 import com.lamnd.zerotohero.exception.AppException;
 import com.lamnd.zerotohero.exception.ErrorCode;
@@ -17,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
@@ -49,21 +51,35 @@ public class AuthService {
 
     public void logout(LogoutRequest logoutRequest) {
         try {
-            SignedJWT signedToken = jwtUtil.verifyToken(logoutRequest.getToken());
+            SignedJWT signedToken = jwtUtil.verifyToken(logoutRequest.getToken(), false);
 
-            String jwtId = signedToken.getJWTClaimsSet().getJWTID();
-            Date expiryTime = signedToken.getJWTClaimsSet().getExpirationTime();
-
-            BlacklistToken blacklistToken = BlacklistToken.builder()
-                    .id(jwtId)
-                    .expiryTime(expiryTime)
-                    .build();
-
-            blacklistTokenRepo.save(blacklistToken);
+            blacklistToken(signedToken);
         } catch (JOSEException | ParseException e) {
             log.error("Cannot verify token: ", e);
 
-            throw new RuntimeException(e);
+            throw new JwtException(e.getMessage());
+        }
+    }
+
+    public AuthResponse refreshToken(RefreshRequest refreshRequest){
+        try {
+            SignedJWT signedToken = jwtUtil.verifyToken(refreshRequest.getToken(), true);
+
+            blacklistToken(signedToken);
+
+            String username = signedToken.getJWTClaimsSet().getSubject();
+            var user = userRepo.findByUsername(username)
+                    .orElseThrow(
+                            () -> new AppException(ErrorCode.UNAUTHENTICATED)
+                    );
+
+            var newToken = jwtUtil.generateToken(user);
+
+            return new AuthResponse(newToken);
+        } catch (JOSEException | ParseException e) {
+            log.error("Cannot verify token: ", e);
+
+            throw new JwtException(e.getMessage());
         }
     }
 
@@ -72,11 +88,11 @@ public class AuthService {
         boolean isValid = true;
 
         try {
-            jwtUtil.verifyToken(token);
+            jwtUtil.verifyToken(token, false);
         } catch (JOSEException | ParseException e) {
             log.error("Cannot verify token: ", e);
 
-            throw new RuntimeException(e);
+            throw new JwtException(e.getMessage());
         } catch (AppException e){
             isValid = false;
         }
@@ -86,5 +102,15 @@ public class AuthService {
                 .build();
     }
 
+    private void blacklistToken(SignedJWT signedToken) throws ParseException {
+        String jwtId = signedToken.getJWTClaimsSet().getJWTID();
+        Date expiryTime = signedToken.getJWTClaimsSet().getExpirationTime();
 
+        BlacklistToken blacklistToken = BlacklistToken.builder()
+                .id(jwtId)
+                .expiryTime(expiryTime)
+                .build();
+
+        blacklistTokenRepo.save(blacklistToken);
+    }
 }

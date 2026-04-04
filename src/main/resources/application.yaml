@@ -32,5 +32,5 @@ spring:
 jwt:
   signer_key: ${API_KEY}
   issuer: https://lamnd.com
-  access_token_expiration: 3600000 # 1 hour
-  refresh_token_expiration: 86400000 # 24 hours
+  access_token_expiration: 3600 # seconds (1 hour)
+  refresh_token_expiration: 86400 # seconds (24 hours)

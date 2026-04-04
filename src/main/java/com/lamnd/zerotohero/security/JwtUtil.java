@@ -12,6 +12,7 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -29,14 +30,17 @@ public class JwtUtil {
     private final JwtConfig jwtConfig;
     private final BlacklistTokenRepo blacklistTokenRepo;
 
-    public SignedJWT verifyToken(String token) throws JOSEException, ParseException {
+    public SignedJWT verifyToken(String token, boolean isRefresh) throws JOSEException, ParseException {
         JWSVerifier verifier = new MACVerifier(jwtConfig.getSecretKey().getBytes());
 
         SignedJWT signedJWT = SignedJWT.parse(token);
 
         var verified = signedJWT.verify(verifier);
 
-        Date expiryTime =  signedJWT.getJWTClaimsSet().getExpirationTime();
+        Date expiryTime =  (isRefresh)
+            ? new Date(signedJWT.getJWTClaimsSet().getIssueTime()
+                .toInstant().plus(jwtConfig.getRefreshTokenExpirationTime(), ChronoUnit.SECONDS).toEpochMilli())
+            : signedJWT.getJWTClaimsSet().getExpirationTime();
 
         if (!verified){
             throw new AppException(ErrorCode.INVALID_TOKEN);
@@ -52,12 +56,11 @@ public class JwtUtil {
     public String generateToken(User user) {
         JWSHeader jwsHeader = new JWSHeader(JWSAlgorithm.HS512);
 
-        Date now = new Date();
-        Date expiryTime = new Date(now.getTime() + jwtConfig.getAccessTokenExpirationTime());
+        Date expiryTime = new Date(Instant.now().plus(jwtConfig.getAccessTokenExpirationTime(), ChronoUnit.SECONDS).toEpochMilli());
 
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
                 .subject(user.getUsername())
-                .issuer("lamnd.com")
+                .issuer(jwtConfig.getIssuer())
                 .issueTime(new Date())
                 .expirationTime(expiryTime)
                 .jwtID(UUID.randomUUID().toString())
@@ -76,6 +79,12 @@ public class JwtUtil {
             log.error("Cannot generate token: ", e);
             throw new RuntimeException(e);
         }
+    }
+
+    public JWTClaimsSet getClaimsSet(String token) throws ParseException {
+        SignedJWT signedJWT = SignedJWT.parse(token);
+
+        return signedJWT.getJWTClaimsSet();
     }
 
     private String buildScope(User user) {
