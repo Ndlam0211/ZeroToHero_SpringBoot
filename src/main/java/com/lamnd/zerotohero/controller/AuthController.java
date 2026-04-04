@@ -5,6 +5,7 @@ import com.lamnd.zerotohero.dto.reponse.AuthResponse;
 import com.lamnd.zerotohero.dto.reponse.IntrospectResponse;
 import com.lamnd.zerotohero.dto.request.AuthRequest;
 import com.lamnd.zerotohero.dto.request.IntrospectRequest;
+import com.lamnd.zerotohero.dto.request.LogoutRequest;
 import com.lamnd.zerotohero.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +22,14 @@ public class AuthController {
 
         return APIResponse.<AuthResponse>builder()
                 .data(authResponse)
+                .build();
+    }
+
+    @PostMapping("/logout")
+    public APIResponse<Void> logout(@RequestBody LogoutRequest logoutRequest){
+        authService.logout(logoutRequest);
+
+        return APIResponse.<Void>builder()
                 .build();
     }
 

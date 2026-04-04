@@ -11,7 +11,7 @@ import java.lang.annotation.*;
 @Constraint(validatedBy = DobValidator.class)
 public @interface DobConstraint {
     String message() default "Invalid date of birth"; // default error message when validation fails
-    int minAge() default 18; // minimum age requirement
+    int minAge(); // minimum age requirement
     Class<?>[] groups() default {}; // for grouping validations
     Class<? extends Payload>[] payload() default {}; // for carrying metadata
 }

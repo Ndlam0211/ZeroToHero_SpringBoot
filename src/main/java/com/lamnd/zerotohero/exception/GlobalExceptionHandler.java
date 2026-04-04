@@ -21,7 +21,7 @@ public class GlobalExceptionHandler {
         APIResponse response = new APIResponse();
 
         response.setCode(errorCode.getCode());
-        response.setMessage(errorCode.getMessage());
+        response.setMessage(ex.getMessage());
 
         return ResponseEntity.internalServerError().body(response);
     }
@@ -79,7 +79,7 @@ public class GlobalExceptionHandler {
 
         Map<String,String> errors = new HashMap<>();
 
-        ex.getBindingResult().getAllErrors().forEach((error)->{
+        ex.getBindingResult().getAllErrors().forEach(error->{
             String fieldName = ((FieldError) error).getField();
             String errorMessage = error.getDefaultMessage();
 

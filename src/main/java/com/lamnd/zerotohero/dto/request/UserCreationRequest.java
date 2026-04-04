@@ -24,6 +24,5 @@ public class UserCreationRequest {
     String lastName;
 
     @DobConstraint(minAge = AppConstants.MINAGE, message = "User must be at least " + AppConstants.MINAGE +" years old")
-    @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "Date of birth must be in the format YYYY-MM-DD")
     LocalDate dob;
 }
