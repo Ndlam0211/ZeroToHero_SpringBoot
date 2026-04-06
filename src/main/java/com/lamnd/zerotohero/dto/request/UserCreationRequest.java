@@ -5,18 +5,20 @@ import com.lamnd.zerotohero.config.AppConstants;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
 
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserCreationRequest {
     @NotBlank
+    @Size(min = 3, message = "username must be at least 3 characters")
     String username;
     @Size(min = 8, message = "password must be at least 8 characters")
     String password;
