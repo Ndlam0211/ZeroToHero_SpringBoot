@@ -1,17 +1,19 @@
 package com.lamnd.zerotohero.config;
 
-import com.lamnd.zerotohero.entity.User;
-import com.lamnd.zerotohero.enums.Role;
-import com.lamnd.zerotohero.repository.UserRepo;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.HashSet;
+
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.HashSet;
+import com.lamnd.zerotohero.entity.User;
+import com.lamnd.zerotohero.enums.Role;
+import com.lamnd.zerotohero.repository.UserRepo;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Configuration
@@ -20,10 +22,10 @@ public class AppInitConfig {
     private final PasswordEncoder passwordEncoder;
 
     @Bean
-    @ConditionalOnProperty(prefix = "spring",
+    @ConditionalOnProperty(
+            prefix = "spring",
             value = "datasource.driver-class-name",
-            havingValue = "com.mysql.cj.jdbc.Driver"
-    )
+            havingValue = "com.mysql.cj.jdbc.Driver")
     ApplicationRunner initApplicationRunner(UserRepo userRepo) {
         return args -> {
             if (userRepo.findByUsername("admin").isEmpty()) {
@@ -33,7 +35,7 @@ public class AppInitConfig {
                 User user = User.builder()
                         .username("admin")
                         .password(passwordEncoder.encode("admin"))
-//                        .roles(roles)
+                        //                        .roles(roles)
                         .build();
 
                 userRepo.save(user);

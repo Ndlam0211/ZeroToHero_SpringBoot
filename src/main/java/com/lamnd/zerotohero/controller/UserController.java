@@ -1,21 +1,20 @@
 package com.lamnd.zerotohero.controller;
 
+import java.util.List;
+
+import jakarta.validation.Valid;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 import com.lamnd.zerotohero.dto.reponse.APIResponse;
 import com.lamnd.zerotohero.dto.reponse.UserResponse;
 import com.lamnd.zerotohero.dto.request.UserCreationRequest;
 import com.lamnd.zerotohero.dto.request.UserUpdateRequest;
-import com.lamnd.zerotohero.entity.User;
 import com.lamnd.zerotohero.service.UserService;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PostAuthorize;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/users")
@@ -27,8 +26,8 @@ public class UserController {
     APIResponse<UserResponse> createUser(@RequestBody @Valid UserCreationRequest request) {
         UserResponse user = userService.createUser(request);
 
-        APIResponse<UserResponse> response = APIResponse.<UserResponse>builder()
-                .data(user).build();
+        APIResponse<UserResponse> response =
+                APIResponse.<UserResponse>builder().data(user).build();
 
         return response;
     }
@@ -42,10 +41,8 @@ public class UserController {
     ResponseEntity<APIResponse<UserResponse>> getUserById(@PathVariable("userId") String userId) {
         UserResponse user = userService.getUserById(userId);
 
-        APIResponse<UserResponse> response = APIResponse.<UserResponse>builder()
-                .code(200)
-                .data(user)
-                .build();
+        APIResponse<UserResponse> response =
+                APIResponse.<UserResponse>builder().code(200).data(user).build();
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -54,17 +51,15 @@ public class UserController {
     ResponseEntity<APIResponse<UserResponse>> getMyInfo() {
         UserResponse user = userService.getMyInfo();
 
-        APIResponse<UserResponse> response = APIResponse.<UserResponse>builder()
-                .code(200)
-                .data(user)
-                .build();
+        APIResponse<UserResponse> response =
+                APIResponse.<UserResponse>builder().code(200).data(user).build();
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PutMapping("/{userId}")
     ResponseEntity<?> updateUserById(@PathVariable("userId") String userId, @RequestBody UserUpdateRequest request) {
-        UserResponse user = userService.updateUserById(userId,request);
+        UserResponse user = userService.updateUserById(userId, request);
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 

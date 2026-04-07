@@ -1,13 +1,11 @@
 package com.lamnd.zerotohero.service;
 
-import com.lamnd.zerotohero.dto.reponse.UserResponse;
-import com.lamnd.zerotohero.dto.request.UserCreationRequest;
-import com.lamnd.zerotohero.entity.Role;
-import com.lamnd.zerotohero.entity.User;
-import com.lamnd.zerotohero.exception.ResourceExistedException;
-import com.lamnd.zerotohero.exception.ResourceNotFoundException;
-import com.lamnd.zerotohero.repository.RoleRepo;
-import com.lamnd.zerotohero.repository.UserRepo;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+
+import java.time.LocalDate;
+import java.util.Optional;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,11 +16,14 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 
-import java.time.LocalDate;
-import java.util.Optional;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import com.lamnd.zerotohero.dto.reponse.UserResponse;
+import com.lamnd.zerotohero.dto.request.UserCreationRequest;
+import com.lamnd.zerotohero.entity.Role;
+import com.lamnd.zerotohero.entity.User;
+import com.lamnd.zerotohero.exception.ResourceExistedException;
+import com.lamnd.zerotohero.exception.ResourceNotFoundException;
+import com.lamnd.zerotohero.repository.RoleRepo;
+import com.lamnd.zerotohero.repository.UserRepo;
 
 @SpringBootTest
 @TestPropertySource("/test.properties")
@@ -32,6 +33,7 @@ public class UserServiceTest {
 
     @MockBean
     private UserRepo userRepo;
+
     @MockBean
     private RoleRepo roleRepo;
 
@@ -68,10 +70,7 @@ public class UserServiceTest {
                 .dob(dob)
                 .build();
 
-        role = Role.builder()
-                .name("USER")
-                .description("Normal user")
-                .build();
+        role = Role.builder().name("USER").description("Normal user").build();
     }
 
     @Test
@@ -98,7 +97,8 @@ public class UserServiceTest {
         Mockito.when(userRepo.existsByUsername(anyString())).thenReturn(true);
 
         // WHEN
-        var exception = Assertions.assertThrows(ResourceExistedException.class, () -> userService.createUser(createUserRequest));
+        var exception = Assertions.assertThrows(
+                ResourceExistedException.class, () -> userService.createUser(createUserRequest));
 
         // THEN
         Assertions.assertEquals("User", exception.getResourceName());

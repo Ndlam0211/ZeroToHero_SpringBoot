@@ -1,5 +1,7 @@
 package com.lamnd.zerotohero.controller;
 
+import org.springframework.web.bind.annotation.*;
+
 import com.lamnd.zerotohero.dto.reponse.APIResponse;
 import com.lamnd.zerotohero.dto.reponse.AuthResponse;
 import com.lamnd.zerotohero.dto.reponse.IntrospectResponse;
@@ -8,8 +10,8 @@ import com.lamnd.zerotohero.dto.request.IntrospectRequest;
 import com.lamnd.zerotohero.dto.request.LogoutRequest;
 import com.lamnd.zerotohero.dto.request.RefreshRequest;
 import com.lamnd.zerotohero.service.AuthService;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -18,33 +20,28 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public APIResponse<AuthResponse> login(@RequestBody AuthRequest authRequest){
+    public APIResponse<AuthResponse> login(@RequestBody AuthRequest authRequest) {
         AuthResponse authResponse = authService.authenticate(authRequest);
 
-        return APIResponse.<AuthResponse>builder()
-                .data(authResponse)
-                .build();
+        return APIResponse.<AuthResponse>builder().data(authResponse).build();
     }
 
     @PostMapping("/logout")
-    public APIResponse<Void> logout(@RequestBody LogoutRequest logoutRequest){
+    public APIResponse<Void> logout(@RequestBody LogoutRequest logoutRequest) {
         authService.logout(logoutRequest);
 
-        return APIResponse.<Void>builder()
-                .build();
+        return APIResponse.<Void>builder().build();
     }
 
     @PostMapping("/refresh")
-    public APIResponse<AuthResponse> refreshToken(@RequestBody RefreshRequest refreshRequest){
+    public APIResponse<AuthResponse> refreshToken(@RequestBody RefreshRequest refreshRequest) {
         AuthResponse authResponse = authService.refreshToken(refreshRequest);
 
-        return APIResponse.<AuthResponse>builder()
-                .data(authResponse)
-                .build();
+        return APIResponse.<AuthResponse>builder().data(authResponse).build();
     }
 
     @PostMapping("/introspect")
-    public APIResponse<IntrospectResponse> introspect(@RequestBody IntrospectRequest introspectRequest){
+    public APIResponse<IntrospectResponse> introspect(@RequestBody IntrospectRequest introspectRequest) {
         IntrospectResponse introspectResponse = authService.introspect(introspectRequest);
 
         return APIResponse.<IntrospectResponse>builder()

@@ -1,5 +1,15 @@
 package com.lamnd.zerotohero.service;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
 import com.lamnd.zerotohero.dto.reponse.UserResponse;
 import com.lamnd.zerotohero.dto.request.UserCreationRequest;
 import com.lamnd.zerotohero.dto.request.UserUpdateRequest;
@@ -10,17 +20,9 @@ import com.lamnd.zerotohero.exception.ResourceNotFoundException;
 import com.lamnd.zerotohero.mapper.UserMapper;
 import com.lamnd.zerotohero.repository.RoleRepo;
 import com.lamnd.zerotohero.repository.UserRepo;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.prepost.PostAuthorize;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 @Slf4j
 @Service
@@ -34,9 +36,9 @@ public class UserService {
 
     private final PasswordEncoder passwordEncoder;
 
-    public UserResponse createUser(UserCreationRequest request){
+    public UserResponse createUser(UserCreationRequest request) {
 
-        if(userRepo.existsByUsername(request.getUsername())){
+        if (userRepo.existsByUsername(request.getUsername())) {
             throw new ResourceExistedException("User", "username", request.getUsername());
         }
 
@@ -56,7 +58,9 @@ public class UserService {
         return userMapper.toListDTO(userRepo.findAll());
     }
 
-    @PostAuthorize("returnObject.username == authentication.name or hasRole('ADMIN')") // users can only get their own information, can't get other users information
+    @PostAuthorize("returnObject.username == authentication.name or hasRole('ADMIN')") // users can only get their own
+    // information, can't get other users
+    // information
     public UserResponse getUserById(String userId) {
         return userMapper.toDTO(findUserById(userId));
     }
@@ -70,7 +74,6 @@ public class UserService {
 
         return userMapper.toDTO(user);
     }
-
 
     public UserResponse updateUserById(String userId, UserUpdateRequest request) {
         User user = findUserById(userId);
@@ -89,14 +92,11 @@ public class UserService {
     }
 
     private User findUserById(String userId) {
-        return userRepo.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId)
-        );
+        return userRepo.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
     }
 
     private User findUserByUsername(String username) {
         return userRepo.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "username", username)
-        );
+                .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
     }
 }

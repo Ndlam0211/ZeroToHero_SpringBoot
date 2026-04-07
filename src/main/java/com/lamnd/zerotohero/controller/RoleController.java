@@ -1,17 +1,17 @@
 package com.lamnd.zerotohero.controller;
 
-import com.lamnd.zerotohero.dto.reponse.APIResponse;
-import com.lamnd.zerotohero.dto.reponse.PermissionResponse;
-import com.lamnd.zerotohero.dto.reponse.RoleResponse;
-import com.lamnd.zerotohero.dto.request.PermissionRequest;
-import com.lamnd.zerotohero.dto.request.RoleRequest;
-import com.lamnd.zerotohero.service.PermissionService;
-import com.lamnd.zerotohero.service.RoleService;
+import java.util.List;
+
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import com.lamnd.zerotohero.dto.reponse.APIResponse;
+import com.lamnd.zerotohero.dto.reponse.RoleResponse;
+import com.lamnd.zerotohero.dto.request.RoleRequest;
+import com.lamnd.zerotohero.service.RoleService;
+
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/roles")
@@ -23,9 +23,7 @@ public class RoleController {
     APIResponse<RoleResponse> createRole(@RequestBody @Valid RoleRequest request) {
         RoleResponse role = roleService.createRole(request);
 
-        return APIResponse.<RoleResponse>builder()
-                .data(role)
-                .build();
+        return APIResponse.<RoleResponse>builder().data(role).build();
     }
 
     @GetMapping
@@ -37,8 +35,6 @@ public class RoleController {
     APIResponse<Void> deleteRole(@PathVariable("role") String role) {
         roleService.deleteRole(role);
 
-        return APIResponse.<Void>builder()
-                .message("Deleted role successfully")
-                .build();
+        return APIResponse.<Void>builder().message("Deleted role successfully").build();
     }
 }

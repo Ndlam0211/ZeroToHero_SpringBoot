@@ -1,5 +1,15 @@
 package com.lamnd.zerotohero.security;
 
+import java.text.ParseException;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
+import java.util.StringJoiner;
+import java.util.UUID;
+
+import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
+
 import com.lamnd.zerotohero.config.JwtConfig;
 import com.lamnd.zerotohero.entity.User;
 import com.lamnd.zerotohero.exception.AppException;
@@ -10,17 +20,9 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
-
-import java.text.ParseException;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.StringJoiner;
-import java.util.UUID;
 
 @Slf4j
 @Component
@@ -36,16 +38,20 @@ public class JwtUtil {
 
         var verified = signedJWT.verify(verifier);
 
-        Date expiryTime =  (isRefresh)
-            ? new Date(signedJWT.getJWTClaimsSet().getIssueTime()
-                .toInstant().plus(jwtConfig.getRefreshTokenExpirationTime(), ChronoUnit.SECONDS).toEpochMilli())
-            : signedJWT.getJWTClaimsSet().getExpirationTime();
+        Date expiryTime = (isRefresh)
+                ? new Date(signedJWT
+                        .getJWTClaimsSet()
+                        .getIssueTime()
+                        .toInstant()
+                        .plus(jwtConfig.getRefreshTokenExpirationTime(), ChronoUnit.SECONDS)
+                        .toEpochMilli())
+                : signedJWT.getJWTClaimsSet().getExpirationTime();
 
-        if (!verified){
+        if (!verified) {
             throw new AppException(ErrorCode.INVALID_TOKEN);
-        } else if (expiryTime.before(new Date())){
+        } else if (expiryTime.before(new Date())) {
             throw new AppException(ErrorCode.EXPIRED_TOKEN);
-        } else if (blacklistTokenRepo.existsById(signedJWT.getJWTClaimsSet().getJWTID())){
+        } else if (blacklistTokenRepo.existsById(signedJWT.getJWTClaimsSet().getJWTID())) {
             throw new AppException(ErrorCode.LOCKED_TOKEN);
         }
 
@@ -55,7 +61,9 @@ public class JwtUtil {
     public String generateToken(User user) {
         JWSHeader jwsHeader = new JWSHeader(JWSAlgorithm.HS512);
 
-        Date expiryTime = new Date(Instant.now().plus(jwtConfig.getAccessTokenExpirationTime(), ChronoUnit.SECONDS).toEpochMilli());
+        Date expiryTime = new Date(Instant.now()
+                .plus(jwtConfig.getAccessTokenExpirationTime(), ChronoUnit.SECONDS)
+                .toEpochMilli());
 
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
                 .subject(user.getUsername())
@@ -94,8 +102,7 @@ public class JwtUtil {
                 scope.add("ROLE_" + role.getName());
 
                 if (!CollectionUtils.isEmpty(role.getPermissions()))
-                    role.getPermissions().forEach(permission ->
-                            scope.add(permission.getName()));
+                    role.getPermissions().forEach(permission -> scope.add(permission.getName()));
             });
         }
 

@@ -1,11 +1,7 @@
 package com.lamnd.zerotohero.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.lamnd.zerotohero.dto.reponse.UserResponse;
-import com.lamnd.zerotohero.dto.request.UserCreationRequest;
-import com.lamnd.zerotohero.service.UserService;
-import lombok.extern.slf4j.Slf4j;
+import java.time.LocalDate;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
@@ -20,7 +16,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.time.LocalDate;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.lamnd.zerotohero.dto.reponse.UserResponse;
+import com.lamnd.zerotohero.dto.request.UserCreationRequest;
+import com.lamnd.zerotohero.service.UserService;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @SpringBootTest
@@ -66,19 +68,15 @@ public class UserControllerTest {
 
         String content = objectMapper.writeValueAsString(createUserRequest);
 
-        Mockito.when(userService.createUser(ArgumentMatchers.any()))
-                .thenReturn(userResponse);
+        Mockito.when(userService.createUser(ArgumentMatchers.any())).thenReturn(userResponse);
 
         // WHEN
-        mockMvc.perform(MockMvcRequestBuilders
-                    .post("/users")
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .content(content))
-        // THEN
+        mockMvc.perform(MockMvcRequestBuilders.post("/users")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(content))
+                // THEN
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("code")
-                        .value(0))
-        ;
+                .andExpect(MockMvcResultMatchers.jsonPath("code").value(0));
     }
 
     @Test
@@ -92,18 +90,14 @@ public class UserControllerTest {
         String content = objectMapper.writeValueAsString(createUserRequest);
 
         // WHEN
-        mockMvc.perform(MockMvcRequestBuilders
-                    .post("/users")
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .content(content))
-        // THEN
+        mockMvc.perform(MockMvcRequestBuilders.post("/users")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(content))
+                // THEN
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.jsonPath("code")
-                        .value(102))
-                .andExpect(MockMvcResultMatchers.jsonPath("message")
-                        .value("Invalid data"))
+                .andExpect(MockMvcResultMatchers.jsonPath("code").value(102))
+                .andExpect(MockMvcResultMatchers.jsonPath("message").value("Invalid data"))
                 .andExpect(MockMvcResultMatchers.jsonPath("data.username")
-                        .value("username must be at least 3 characters"))
-        ;
+                        .value("username must be at least 3 characters"));
     }
 }

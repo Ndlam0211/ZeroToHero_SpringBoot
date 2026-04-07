@@ -1,15 +1,16 @@
 package com.lamnd.zerotohero.service;
 
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
 import com.lamnd.zerotohero.dto.reponse.PermissionResponse;
 import com.lamnd.zerotohero.dto.request.PermissionRequest;
 import com.lamnd.zerotohero.entity.Permission;
 import com.lamnd.zerotohero.mapper.PermissionMapper;
 import com.lamnd.zerotohero.repository.PermissionRepo;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor

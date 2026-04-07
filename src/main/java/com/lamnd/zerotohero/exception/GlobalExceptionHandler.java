@@ -1,22 +1,22 @@
 package com.lamnd.zerotohero.exception;
 
-import com.lamnd.zerotohero.dto.reponse.APIResponse;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
-import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.lamnd.zerotohero.dto.reponse.APIResponse;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<APIResponse> handleOtherException(Exception ex){
+    public ResponseEntity<APIResponse> handleOtherException(Exception ex) {
         ErrorCode errorCode = ErrorCode.UNCATEGORIZED_EXCEPTION;
         APIResponse response = new APIResponse();
 
@@ -27,16 +27,14 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(AppException.class)
-    public ResponseEntity<APIResponse> handleAppException(AppException ex){
+    public ResponseEntity<APIResponse> handleAppException(AppException ex) {
         ErrorCode errorCode = ex.getErrorCode();
         APIResponse response = new APIResponse();
 
         response.setCode(errorCode.getCode());
         response.setMessage(ex.getMessage());
 
-        return ResponseEntity
-                .status(errorCode.getHttpStatusCode())
-                .body(response);
+        return ResponseEntity.status(errorCode.getHttpStatusCode()).body(response);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
@@ -48,42 +46,37 @@ public class GlobalExceptionHandler {
         response.setCode(errorCode.getCode());
         response.setMessage(errorCode.getMessage());
 
-        return ResponseEntity
-                .status(errorCode.getHttpStatusCode())
-                .body(response);
+        return ResponseEntity.status(errorCode.getHttpStatusCode()).body(response);
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<APIResponse<?>> handleResourceNotFoundException(ResourceNotFoundException ex){
-        APIResponse<?> response = APIResponse.builder()
-                .code(404)
-                .message(ex.getMessage())
-                .build();
+    public ResponseEntity<APIResponse<?>> handleResourceNotFoundException(ResourceNotFoundException ex) {
+        APIResponse<?> response =
+                APIResponse.builder().code(404).message(ex.getMessage()).build();
 
         return new ResponseEntity<APIResponse<?>>(response, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(ResourceExistedException.class)
-    public ResponseEntity<APIResponse<?>> handleResourceExistedException(ResourceExistedException ex){
-        APIResponse<?> response = APIResponse.builder()
-                .code(422)
-                .message(ex.getMessage())
-                .build();
+    public ResponseEntity<APIResponse<?>> handleResourceExistedException(ResourceExistedException ex) {
+        APIResponse<?> response =
+                APIResponse.builder().code(422).message(ex.getMessage()).build();
 
         return new ResponseEntity<APIResponse<?>>(response, HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<APIResponse<Map<String,String>>> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex){
-        APIResponse<Map<String,String>> response = new APIResponse<>();
+    public ResponseEntity<APIResponse<Map<String, String>>> handleMethodArgumentNotValidException(
+            MethodArgumentNotValidException ex) {
+        APIResponse<Map<String, String>> response = new APIResponse<>();
 
-        Map<String,String> errors = new HashMap<>();
+        Map<String, String> errors = new HashMap<>();
 
-        ex.getBindingResult().getAllErrors().forEach(error->{
+        ex.getBindingResult().getAllErrors().forEach(error -> {
             String fieldName = ((FieldError) error).getField();
             String errorMessage = error.getDefaultMessage();
 
-            errors.put(fieldName,errorMessage);
+            errors.put(fieldName, errorMessage);
         });
 
         ErrorCode error = ErrorCode.INVALID_DATA;

@@ -1,8 +1,6 @@
 package com.lamnd.zerotohero.config;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -12,14 +10,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
-
-import javax.crypto.spec.SecretKeySpec;
 
 @Configuration
 @EnableWebSecurity
@@ -30,27 +23,27 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(AbstractHttpConfigurer::disable) // disable csrf
+        http.csrf(AbstractHttpConfigurer::disable) // disable csrf
                 .authorizeHttpRequests(requests -> requests
                         // CREATION USER API ENDPOINT - NO JWT REQUIRED
-                        .requestMatchers(HttpMethod.POST,AppConstants.USER_URLS).permitAll()
-//                        .requestMatchers(HttpMethod.GET, AppConstants.USER_URLS).hasRole(Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.POST, AppConstants.USER_URLS)
+                        .permitAll()
+                        //                        .requestMatchers(HttpMethod.GET,
+                        // AppConstants.USER_URLS).hasRole(Role.ADMIN.name())
                         // AUTHENTICATION ENDPOINTS - NO JWT REQUIRED
-                        .requestMatchers(AppConstants.AUTH_URLS).permitAll()
+                        .requestMatchers(AppConstants.AUTH_URLS)
+                        .permitAll()
                         // OTHER API ENDPOINTS - JWT REQUIRED
-                        .anyRequest().authenticated()
-                )
-                .oauth2ResourceServer(oauth2 -> oauth2
-                        .jwt(jwtConfigurer -> jwtConfigurer
+                        .anyRequest()
+                        .authenticated())
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwtConfigurer -> jwtConfigurer
                                 .decoder(customJwtDecoder)
-                                .jwtAuthenticationConverter(jwtAuthenticationConverter())
-                        )
-                        .authenticationEntryPoint(new JWTAuthenticationEndpoint())
-                );
-                // k luu session, cookie tren client
-//                .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                                .jwtAuthenticationConverter(jwtAuthenticationConverter()))
+                        .authenticationEntryPoint(new JWTAuthenticationEndpoint()));
+        // k luu session, cookie tren client
+        //                .sessionManagement(management ->
+        // management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        //                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
@@ -67,7 +60,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(10);
     }
 }

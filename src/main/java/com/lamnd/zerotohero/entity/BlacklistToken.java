@@ -1,10 +1,11 @@
 package com.lamnd.zerotohero.entity;
 
+import java.util.Date;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import lombok.*;
 
-import java.util.Date;
+import lombok.*;
 
 @Entity
 @Builder
@@ -15,5 +16,6 @@ import java.util.Date;
 public class BlacklistToken {
     @Id
     private String id;
+
     private Date expiryTime;
 }

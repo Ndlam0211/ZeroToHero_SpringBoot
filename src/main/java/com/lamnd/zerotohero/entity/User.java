@@ -1,11 +1,11 @@
 package com.lamnd.zerotohero.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
-
 import java.time.LocalDate;
 import java.util.Set;
+
+import jakarta.persistence.*;
+
+import lombok.*;
 
 @Entity
 @Builder
@@ -27,7 +27,6 @@ public class User {
     @JoinTable(
             name = "user_role",
             joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_name")
-    )
+            inverseJoinColumns = @JoinColumn(name = "role_name"))
     Set<Role> roles;
 }

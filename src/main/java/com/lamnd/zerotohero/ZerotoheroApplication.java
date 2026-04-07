@@ -6,8 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class ZerotoheroApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(ZerotoheroApplication.class, args);
-	}
-
+    public static void main(String[] args) {
+        SpringApplication.run(ZerotoheroApplication.class, args);
+    }
 }

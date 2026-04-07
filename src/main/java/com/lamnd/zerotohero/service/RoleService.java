@@ -1,19 +1,18 @@
 package com.lamnd.zerotohero.service;
 
-import com.lamnd.zerotohero.dto.reponse.PermissionResponse;
+import java.util.HashSet;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
 import com.lamnd.zerotohero.dto.reponse.RoleResponse;
-import com.lamnd.zerotohero.dto.request.PermissionRequest;
 import com.lamnd.zerotohero.dto.request.RoleRequest;
-import com.lamnd.zerotohero.entity.Permission;
 import com.lamnd.zerotohero.entity.Role;
 import com.lamnd.zerotohero.mapper.RoleMapper;
 import com.lamnd.zerotohero.repository.PermissionRepo;
 import com.lamnd.zerotohero.repository.RoleRepo;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor

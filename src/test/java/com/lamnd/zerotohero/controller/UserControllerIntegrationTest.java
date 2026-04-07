@@ -1,18 +1,12 @@
 package com.lamnd.zerotohero.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.lamnd.zerotohero.dto.reponse.UserResponse;
-import com.lamnd.zerotohero.dto.request.UserCreationRequest;
-import com.lamnd.zerotohero.service.UserService;
+import java.time.LocalDate;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -23,14 +17,17 @@ import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import java.time.LocalDate;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.lamnd.zerotohero.dto.reponse.UserResponse;
+import com.lamnd.zerotohero.dto.request.UserCreationRequest;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @Testcontainers
 public class UserControllerIntegrationTest {
     @Container
-    static final MySQLContainer<?> MYSQL_CONTAINER = new MySQLContainer<>("mysql:8.0.36");
+    static final MySQLContainer<?> MYSQL_CONTAINER = new MySQLContainer<>("mysql:8.0.36 ");
 
     @DynamicPropertySource
     static void setDatasourceProperties(DynamicPropertyRegistry registry) {
@@ -40,7 +37,6 @@ public class UserControllerIntegrationTest {
         registry.add("spring.datasource.driver-class-name", MYSQL_CONTAINER::getDriverClassName);
         registry.add("spring.jpa.hibernate.ddl-auto", () -> "update");
     }
-
 
     @Autowired
     private MockMvc mockMvc;
@@ -79,20 +75,14 @@ public class UserControllerIntegrationTest {
         String content = objectMapper.writeValueAsString(createUserRequest);
 
         // WHEN
-        mockMvc.perform(MockMvcRequestBuilders
-                        .post("/users")
+        mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(content))
                 // THEN
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("code")
-                        .value(0))
-                .andExpect(MockMvcResultMatchers.jsonPath("data.username")
-                        .value(createUserRequest.getUsername()))
-                .andExpect(MockMvcResultMatchers.jsonPath("data.firstName")
-                        .value(createUserRequest.getFirstName()))
-                .andExpect(MockMvcResultMatchers.jsonPath("data.lastName")
-                        .value(createUserRequest.getLastName()))
-        ;
+                .andExpect(MockMvcResultMatchers.jsonPath("code").value(0))
+                .andExpect(MockMvcResultMatchers.jsonPath("data.username").value(createUserRequest.getUsername()))
+                .andExpect(MockMvcResultMatchers.jsonPath("data.firstName").value(createUserRequest.getFirstName()))
+                .andExpect(MockMvcResultMatchers.jsonPath("data.lastName").value(createUserRequest.getLastName()));
     }
 }

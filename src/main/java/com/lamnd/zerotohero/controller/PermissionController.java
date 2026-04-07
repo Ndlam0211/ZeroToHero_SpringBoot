@@ -1,15 +1,17 @@
 package com.lamnd.zerotohero.controller;
 
-import com.lamnd.zerotohero.dto.reponse.APIResponse;
-import com.lamnd.zerotohero.dto.reponse.PermissionResponse;
-import com.lamnd.zerotohero.dto.reponse.UserResponse;
-import com.lamnd.zerotohero.dto.request.PermissionRequest;
-import com.lamnd.zerotohero.service.PermissionService;
+import java.util.List;
+
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import com.lamnd.zerotohero.dto.reponse.APIResponse;
+import com.lamnd.zerotohero.dto.reponse.PermissionResponse;
+import com.lamnd.zerotohero.dto.request.PermissionRequest;
+import com.lamnd.zerotohero.service.PermissionService;
+
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/permissions")
@@ -21,9 +23,7 @@ public class PermissionController {
     APIResponse<PermissionResponse> createPermission(@RequestBody @Valid PermissionRequest request) {
         PermissionResponse permission = permissionService.createPermission(request);
 
-        return APIResponse.<PermissionResponse>builder()
-                .data(permission)
-                .build();
+        return APIResponse.<PermissionResponse>builder().data(permission).build();
     }
 
     @GetMapping
