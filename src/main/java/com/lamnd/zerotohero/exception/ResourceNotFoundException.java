@@ -1,5 +1,8 @@
 package com.lamnd.zerotohero.exception;
 
+import lombok.Getter;
+
+@Getter
 public class ResourceNotFoundException extends RuntimeException {
     String resourceName;
     String fieldName;
