@@ -59,6 +59,7 @@ public class JwtUtil {
     }
 
     public String generateToken(User user) {
+        log.info("api key: {}", jwtConfig.getSecretKey());
         JWSHeader jwsHeader = new JWSHeader(JWSAlgorithm.HS512);
 
         Date expiryTime = new Date(Instant.now()
