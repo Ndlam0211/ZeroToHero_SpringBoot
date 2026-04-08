@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -37,20 +38,22 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     public UserResponse createUser(UserCreationRequest request) {
-
-        if (userRepo.existsByUsername(request.getUsername())) {
-            throw new ResourceExistedException("User", "username", request.getUsername());
-        }
-
         request.setPassword(passwordEncoder.encode(request.getPassword()));
 
         User user = userMapper.toUser(request);
 
         Set<com.lamnd.zerotohero.entity.Role> roles = new HashSet<>();
-        roleRepo.findById(Role.USER.name()).map(((roles::add)));
+        roleRepo.findById(Role.USER.name())
+                .map((roles::add));
         user.setRoles(roles);
 
-        return userMapper.toDTO(userRepo.save(user));
+        try {
+            user = userRepo.save(user);
+        } catch (DataIntegrityViolationException e) {
+            throw new ResourceExistedException("User", "username", request.getUsername());
+        }
+
+        return userMapper.toDTO(user);
     }
 
     @PreAuthorize("hasRole('ADMIN')") // only admin is able to access
@@ -58,9 +61,8 @@ public class UserService {
         return userMapper.toListDTO(userRepo.findAll());
     }
 
-    @PostAuthorize("returnObject.username == authentication.name or hasRole('ADMIN')") // users can only get their own
-    // information, can't get other users
-    // information
+    // users can only get their own info, admin can get any user info
+    @PostAuthorize("returnObject.username == authentication.name or hasRole('ADMIN')")
     public UserResponse getUserById(String userId) {
         return userMapper.toDTO(findUserById(userId));
     }
