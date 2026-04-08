@@ -1,6 +1,5 @@
 package com.lamnd.zerotohero.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -13,13 +12,19 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
-    @Autowired
-    private CustomJwtDecoder customJwtDecoder;
+    private final CustomJwtDecoder customJwtDecoder;
+
+    public SecurityConfig (CustomJwtDecoder customJwtDecoder) {
+        this.customJwtDecoder = customJwtDecoder;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -41,10 +46,22 @@ public class SecurityConfig {
                                 .jwtAuthenticationConverter(jwtAuthenticationConverter()))
                         .authenticationEntryPoint(new JWTAuthenticationEndpoint()));
         // k luu session, cookie tren client
-        //                .sessionManagement(management ->
-        // management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        //                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+        //                .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         return http.build();
+    }
+
+    @Bean
+    public CorsFilter corsFilter() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true); // cho phép gửi cookie
+        config.addAllowedOrigin("http://localhost:3000"); // cho phép domain localhost:3000 truy cập
+        config.addAllowedHeader("*"); // cho phép tất cả các header
+        config.addAllowedMethod("*"); // cho phép tất cả các phương thức HTTP (GET, POST, PUT, DELETE, v.v.)
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+
+        return new CorsFilter(source);
     }
 
     @Bean

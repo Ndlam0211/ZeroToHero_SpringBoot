@@ -1,7 +1,10 @@
 package com.lamnd.zerotohero.config;
 
 public class AppConstants {
+    private AppConstants() {
+        // Private constructor to prevent instantiation
+    }
     public static final int MINAGE = 18;
-    public static final String[] AUTH_URLS = {"/auth/**"};
-    public static final String[] USER_URLS = {"/users"};
+    protected static final String[] AUTH_URLS = {"/auth/**"};
+    protected static final String[] USER_URLS = {"/users"};
 }
