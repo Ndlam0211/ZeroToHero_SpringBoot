@@ -43,8 +43,7 @@ public class UserService {
         User user = userMapper.toUser(request);
 
         Set<com.lamnd.zerotohero.entity.Role> roles = new HashSet<>();
-        roleRepo.findById(Role.USER.name())
-                .map((roles::add));
+        roleRepo.findById(Role.USER.name()).map((roles::add));
         user.setRoles(roles);
 
         try {

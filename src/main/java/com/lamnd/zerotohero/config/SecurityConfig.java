@@ -22,7 +22,7 @@ import org.springframework.web.filter.CorsFilter;
 public class SecurityConfig {
     private final CustomJwtDecoder customJwtDecoder;
 
-    public SecurityConfig (CustomJwtDecoder customJwtDecoder) {
+    public SecurityConfig(CustomJwtDecoder customJwtDecoder) {
         this.customJwtDecoder = customJwtDecoder;
     }
 
@@ -46,7 +46,8 @@ public class SecurityConfig {
                                 .jwtAuthenticationConverter(jwtAuthenticationConverter()))
                         .authenticationEntryPoint(new JWTAuthenticationEndpoint()));
         // k luu session, cookie tren client
-        //                .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        //                .sessionManagement(management ->
+        // management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         return http.build();
     }
 
